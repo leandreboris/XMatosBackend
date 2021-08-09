@@ -82,8 +82,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'XMatosbackend.wsgi.application'
+AUTH_USER_MODEL = 'Entities.User'
 
+WSGI_APPLICATION = 'XMatosbackend.wsgi.application'
 
 
 

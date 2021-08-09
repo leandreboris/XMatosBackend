@@ -1,16 +1,17 @@
 from django.db import models
 from phonenumber_field import modelfields
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, UserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 
-class AccountManager(BaseUserManager):
-    def create_user(self, email, password=None):    
-        if not email :
-            raise ValueError("Users must have an email")
+class UserManager(BaseUserManager):
+    def create_user(self, email, username, password=None):    
+        if not username :
+            raise ValueError("Users must have an username")
 
         user = self.model(
             email = self.normalize_email(email),
+            username = username,
         )      
 
         user.set_password (password)
@@ -18,32 +19,26 @@ class AccountManager(BaseUserManager):
         return user 
 
 
-    def create_staffuser(self, email, password):
-        user = self.create_user(
-            email,
-            password=password,
-        )
-        user.staff = True
-        user.save(using=self._db)
-        return user
-
     def create_superuser(self, email, username, password):
         user = self.create_user(
             email = self.normalize_email(email),
+            username = username,
             password = password,
         )
 
-        user.admin = True
-        user.staff = True
-        user.superuser = True
+        user.is_admin = True
+        user.is_superuser = True
+        user.is_staff = True
 
         user.save(using=self._db)
+
         return user
 
 
 
-# Account model 
-class Account(AbstractBaseUser):
+# User model 
+class User(AbstractBaseUser):
+
     username = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -53,18 +48,21 @@ class Account(AbstractBaseUser):
     cin = models.CharField(max_length=10, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
+
     is_login = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
-
-    objects = AccountManager()
+    objects = UserManager()
 
 
-    def __str__(self) -> str:
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+
+
+    def __str__(self) :
         return self.username
     
     def has_perm(self, perm, obj=None):
@@ -72,14 +70,7 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
-    @property
-    def is_staff(self):
-        return self.staff
 
-    @property
-    def is_admin(self):
-        return self.admin
-    
 
 
 
@@ -152,7 +143,7 @@ class Commande(models.Model):
 # Facture model, following the class diagramm specifications
 class Facture(models.Model):
     idFacture = models.AutoField(primary_key=True, editable=False)
-    clientFacture  = models.ForeignKey(Account, on_delete=models.CASCADE)
+    clientFacture  = models.ForeignKey(User, on_delete=models.CASCADE)
     datePaiementFacture = models.DateTimeField(auto_now_add=True)
     prixHtFacture = models.FloatField()
     totalHtFacture = models.FloatField()
