@@ -8,6 +8,7 @@ from django.contrib.auth import login
 
 
 
+from rest_framework import  viewsets, permissions
 from rest_framework.parsers import  JSONParser
 
 
@@ -19,6 +20,24 @@ from rest_framework.parsers import  JSONParser
 
 
 """                             REST APIs for required entities                      """
+
+
+
+class CategorieViewSet(viewsets.ModelViewSet):
+    
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CategorieSerializer
+
+    def get_queryset(self):
+        categorie = Categorie.objects.all()
+        return categorie
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Created successfully", safe = False)
+        return JsonResponse("Failed to create", safe = False)
+
 
 
 # Categorie API

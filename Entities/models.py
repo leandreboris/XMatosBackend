@@ -4,7 +4,6 @@ from Users.models import User
 
 
 
-
 # Categorie model, following the class diagramm specifications
 
 class Categorie(models.Model):
