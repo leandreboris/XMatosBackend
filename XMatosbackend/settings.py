@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Entities',
+    'Users',
+    'Codes',
     'corsheaders',
     'rest_framework',
-    'knox',
     'phonenumber_field',
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'Entities.User'
+AUTH_USER_MODEL = 'Users.User'
 
 WSGI_APPLICATION = 'XMatosbackend.wsgi.application'
 
