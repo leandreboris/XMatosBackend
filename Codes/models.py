@@ -11,7 +11,7 @@ class Code(models.Model):
     user =models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.number
+        return str(self.user) + ' : ' + self.number 
 
     def save(self, *args, **kwargs):
         numbers_range = [n for n in range(10)]

@@ -31,20 +31,18 @@ class UserManager(BaseUserManager):
         if not telephone :
             raise ValueError("Providers must have a telephone")
 
-        user = self.create_user(
+        user = self.model(
             email = self.normalize_email(email),
             username = username,
-            password= password,
-        )
-
-        user += self.model(
             cin = cin,
             adresse = adresse, 
             telephone = telephone,
         )
 
+        user.set_password (password)
         user.is_staff = True
         user.is_fournisseur = True
+
         user.save(using=self._db)
 
         return user
@@ -68,6 +66,9 @@ class UserManager(BaseUserManager):
         return user
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
 
 # User model 
 class User(AbstractBaseUser):
@@ -75,6 +76,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    adresse = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(max_length=60, unique=True)
     avatar = models.ImageField(null=True, blank=True)
     telephone = modelfields.PhoneNumberField(blank=True, null=True)
