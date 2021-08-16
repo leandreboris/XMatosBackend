@@ -5,5 +5,5 @@ from .models import Code
 
 @receiver(post_save, sender=User)
 def post_save_generate_code(sender, instance, created, *args, **kwargs):
-    if created:
+    if created and instance.is_local is False:
         Code.objects.create(user=instance)

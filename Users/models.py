@@ -13,6 +13,8 @@ class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None):    
         if not username :
             raise ValueError("Users must have an username")
+        
+        
 
         user = self.model(
             email = self.normalize_email(email),
@@ -83,6 +85,9 @@ class User(AbstractBaseUser):
     cin = models.CharField(max_length=10, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
+
+    last_ip = models.CharField(max_length=15, blank=True,null=True)
+    is_local = models.BooleanField(default=True)
 
     is_login = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
