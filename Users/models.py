@@ -85,8 +85,9 @@ class User(AbstractBaseUser):
     adresse = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(max_length=60, unique=True)
     avatar = models.ImageField(null=True, blank=True)
-    telephone = modelfields.PhoneNumberField()
+    telephone = modelfields.PhoneNumberField(null=True, blank=True)
     cin = models.CharField(max_length=10)
+    
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
 

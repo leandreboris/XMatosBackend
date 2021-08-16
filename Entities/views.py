@@ -10,6 +10,10 @@ from django.contrib.auth import login
 
 from rest_framework import  viewsets, permissions
 from rest_framework.parsers import  JSONParser
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -23,25 +27,11 @@ from rest_framework.parsers import  JSONParser
 
 
 
-class CategorieViewSet(viewsets.ModelViewSet):
-    
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = CategorieSerializer
-
-    def get_queryset(self):
-        categorie = Categorie.objects.all()
-        return categorie
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Created successfully", safe = False)
-        return JsonResponse("Failed to create", safe = False)
 
 
 
 # Categorie API
-@csrf_exempt
+@api_view(['GET', 'POST', 'PUT'])
 def categorieApi(request, id=0):
 
     if request.method == 'GET':
@@ -78,7 +68,8 @@ def categorieApi(request, id=0):
 
 
 # Article API
-@csrf_exempt
+
+@api_view(['GET', 'POST', 'PUT'])
 def articleApi(request, id=0):
 
     if request.method == 'GET':
@@ -115,7 +106,7 @@ def articleApi(request, id=0):
 
 
 # Mode de livraison API
-@csrf_exempt
+@api_view(['GET', 'POST', 'PUT'])
 def modedelivraisonApi(request, id=0):
 
     if request.method == 'GET':
@@ -151,7 +142,7 @@ def modedelivraisonApi(request, id=0):
 
 
 # Mode de paiement API
-@csrf_exempt
+@api_view(['GET', 'POST', 'PUT'])
 def modedepaiementApi(request, id=0):
 
     if request.method == 'GET':
@@ -185,8 +176,11 @@ def modedepaiementApi(request, id=0):
         modedepaiement.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
+
 # Facture API
-@csrf_exempt
+@api_view(['GET', 'POST', 'PUT'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def factureApi(request, id=0):
 
     if request.method == 'GET':
@@ -223,7 +217,7 @@ def factureApi(request, id=0):
 
 
 # Commande API
-@csrf_exempt
+@api_view(['GET', 'POST', 'PUT'])
 def commandeApi(request, id=0):
 
     if request.method == 'GET':
