@@ -1,4 +1,3 @@
-import Users
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -9,7 +8,6 @@ from XMatosbackend  import utils
 
 from django.contrib.gis.geoip2 import GeoIP2
 
-from .models import User
 
 
 
@@ -75,7 +73,11 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
         g = GeoIP2()
         location = g.city("41.77.119.167")
         location_country = location["country_name"]
+
+
+        # We check whether the IP is local or not
         if location_country != "Morocco":
+          # Another API for the code verification
           print(location_country)
 
         context = {

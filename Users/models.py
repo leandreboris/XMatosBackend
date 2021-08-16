@@ -47,8 +47,7 @@ class UserManager(BaseUserManager):
         )
 
         user.set_password (password)
-        user.is_staff = True
-        user.is_fournisseur = True
+        user.is_provider = True
 
         user.save(using=self._db)
 

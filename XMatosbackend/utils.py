@@ -1,4 +1,3 @@
-import os
 
 from twilio.rest import Client
 
@@ -6,12 +5,9 @@ import socket
 
 
 
-account_sid = ""
-auth_token = ""
-
+# account_sid = ""
+# auth_token = ""
 # client = Client(account_sid, auth_token)
-
-
 # def send_sms(user_code, phone_number):
 #     message = client.messages \
 #                 .create(
