@@ -16,31 +16,34 @@ class UserRegistrationAPI(generics.GenericAPIView):
     serializer_class = UserRegisterSerializer
     
     def post(self, request, *args, **kwargs):
-
-        # # Tracking the ip address
-        # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        # if x_forwarded_for:
-        #     ip = x_forwarded_for.split(',')[0]
-        # else:
-        #     ip = request.META.get('REMOTE_ADDR')
-
-
-        # # Using geoip2 to get the location
-        # g = GeoIP2()
-        # location = g.city(ip)
-        # location_country = location["country_name"]
-        # context = {
-        #     "location_country": location_country,
-        # }
-
         # Saving data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
+        # Tracking the ip address
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        # Using geoip2 to get the location
+        g = GeoIP2()
+        location = g.city("41.77.119.167")
+        location_country = location["country_name"]
+        if location_country != "Morocco":
+          print(location_country)
+
+        context = {
+            "IP address": ip,
+        }
+
+
         return Response({
             "user" : UserSerializer(user, context=self.get_serializer_context()).data,
-            "token" : AuthToken.objects.create(user)[1]
+            "token" : AuthToken.objects.create(user)[1],
+            "context" : context,
         })
 
 

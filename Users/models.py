@@ -10,7 +10,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # Handling Users Accounts
 class UserManager(BaseUserManager):
 
-    def create_user(self, email, username, password=None):    
+    def create_user(self, email, username, password=None, first_name=None, last_name=None, last_ip=None, avatar=None, *args, **kwargs):    
         if not username :
             raise ValueError("Users must have an username")
         
@@ -19,13 +19,17 @@ class UserManager(BaseUserManager):
         user = self.model(
             email = self.normalize_email(email),
             username = username,
+            first_name = first_name,
+            last_name = last_name,
+            last_ip = last_ip,
+            avatar = avatar,
         )      
 
         user.set_password (password)
         user.save(using=self._db) 
         return user 
 
-    def create_provider(self, email, username, password, cin, adresse, telephone):
+    def create_provider(self, email, username, password, cin, adresse, telephone, first_name=None, last_name=None, last_ip=None, avatar=None, *args, **kwargs):
         if not cin :
             raise ValueError("Providers must have a cin")
         if not adresse :
@@ -39,6 +43,10 @@ class UserManager(BaseUserManager):
             cin = cin,
             adresse = adresse, 
             telephone = telephone,
+            first_name = first_name,
+            last_name = last_name,
+            last_ip = last_ip,
+            avatar = avatar,
         )
 
         user.set_password (password)
@@ -81,8 +89,8 @@ class User(AbstractBaseUser):
     adresse = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(max_length=60, unique=True)
     avatar = models.ImageField(null=True, blank=True)
-    telephone = modelfields.PhoneNumberField(blank=True, null=True)
-    cin = models.CharField(max_length=10, blank=True, null=True)
+    telephone = modelfields.PhoneNumberField()
+    cin = models.CharField(max_length=10)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
 
