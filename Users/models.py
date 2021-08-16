@@ -13,9 +13,6 @@ class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None, first_name=None, last_name=None, last_ip=None, avatar=None, *args, **kwargs):    
         if not username :
             raise ValueError("Users must have an username")
-        
-        
-
         user = self.model(
             email = self.normalize_email(email),
             username = username,
@@ -119,4 +116,6 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+
+  
 
