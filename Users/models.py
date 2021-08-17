@@ -80,8 +80,8 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
 
     username = models.CharField(max_length=30, unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=30, null=True, blank=True)
+    last_name = models.CharField(max_length=3, null=True, blank=True)
     adresse = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(max_length=60, unique=True)
     avatar = models.ImageField(null=True, blank=True)
@@ -105,6 +105,11 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
+
+    class Meta:
+        ordering = ['-date_joined']
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 
 

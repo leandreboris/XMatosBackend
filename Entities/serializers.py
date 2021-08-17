@@ -6,7 +6,7 @@ class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
         fields = (
-            'idCategorie',
+            'id',
             'libelleCategorie',
         )
 
@@ -14,7 +14,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = (
-            'idArticle',
+            'id',
             'imageArticle',
             'categorieArticle',
             'nomArticle',
@@ -29,7 +29,7 @@ class ModeDeLivraisonSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModeDeLivraison
         fields = (
-            'idModeDeLivraison',
+            'id',
             'libelleModeDeLivraison',
             'descriptionModeDeLivraison',
         )
@@ -39,7 +39,7 @@ class ModeDePaiementSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModeDePaiement
         fields = (
-            'idModeDePaiement',
+            'id',
             'libelleModeDePaiement',
             'descriptionModeDePaiement',
         )
@@ -48,7 +48,7 @@ class CommandeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commande
         fields = (
-            'idCommande',
+            'id',
             'modeDeLivraisonCommande',
             'modeDePaiementCommande',
             'dateAjoutCommande',
@@ -60,7 +60,7 @@ class FactureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Facture
         fields = (
-            'idFacture',
+            'id',
             'clientFacture',
             'datePaiementFacture',
             'prixHtFacture',

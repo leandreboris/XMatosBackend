@@ -7,7 +7,6 @@ from Users.models import User
 # Categorie model, following the class diagramm specifications
 
 class Categorie(models.Model):
-    idCategorie = models.AutoField(primary_key=True, editable=False)
     libelleCategorie = models.CharField(max_length=256)
 
     def __str__(self):
@@ -20,7 +19,6 @@ class Categorie(models.Model):
 
 # Article model, following the class diagramm specifications
 class Article(models.Model):
-    idArticle = models.AutoField(primary_key=True, editable=False)
     imageArticle = models.ImageField(blank=True, null=True)
     categorieArticle = models.ForeignKey(Categorie, on_delete=models.CASCADE)
     nomArticle = models.CharField(max_length=50)
@@ -38,7 +36,6 @@ class Article(models.Model):
 
 # Mode de livraison model, following the class diagramm specifications
 class ModeDeLivraison(models.Model):
-    idModeDeLivraison = models.AutoField(primary_key=True, editable=False)
     libelleModeDeLivraison = models.CharField(max_length=50)
     descriptionModeDeLivraison = models.CharField(max_length=256)
 
@@ -48,7 +45,6 @@ class ModeDeLivraison(models.Model):
 
 # Mode de paiement model, following the class diagramm specifications
 class ModeDePaiement(models.Model):
-    idModeDePaiement = models.AutoField(primary_key=True, editable=False)
     libelleModeDePaiement = models.CharField(max_length=50)
     descriptionModeDePaiement = models.CharField(max_length=256)
 
@@ -58,7 +54,6 @@ class ModeDePaiement(models.Model):
 
 # Commande model, following the class diagramm specifications
 class Commande(models.Model):
-    idCommande = models.AutoField(primary_key=True, editable=False)
     modeDeLivraisonCommande = models.ForeignKey(ModeDeLivraison, on_delete=models.CASCADE)
     modeDePaiementCommande = models.ForeignKey(ModeDePaiement, on_delete=models.CASCADE)
     dateAjoutCommande = models.DateTimeField(auto_now_add=True)
@@ -71,7 +66,6 @@ class Commande(models.Model):
 
 # Facture model, following the class diagramm specifications
 class Facture(models.Model):
-    idFacture = models.AutoField(primary_key=True, editable=False)
     clientFacture  = models.ForeignKey(User, on_delete=models.CASCADE)
     datePaiementFacture = models.DateTimeField(auto_now_add=True)
     prixHtFacture = models.FloatField()

@@ -9,13 +9,13 @@ from django.contrib.auth.admin import UserAdmin
 
 # Custom user display
 class AccountAdmin(UserAdmin):
-    list_display = ('email', 'first_name', 'last_login', 'is_admin','is_staff','is_provider', 'is_local')
+    list_display = ('email', 'date_joined', 'last_login', 'is_admin','is_staff','is_provider', 'is_local')
     search_fields = ('email', 'username')
     readonly_fields = ('id', 'date_joined', 'last_login')
-
 
     filter_horizontal = ()
     list_filter = ()
     fieldsets = ()
+    
 admin.site.register(User, AccountAdmin)
 
