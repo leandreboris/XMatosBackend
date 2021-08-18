@@ -145,3 +145,4 @@ class UserAPI(generics.RetrieveAPIView):
   def get_object(self):
     object_viewed_signal.send(self.request.user.__class__, instanceID=self.request.user.id, request=self.request)
     return self.request.user
+  

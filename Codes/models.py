@@ -2,6 +2,8 @@ from django.db import models
 from Users.models import User
 import random 
 
+
+
 # Create your models here.
 
 
@@ -23,3 +25,4 @@ class Code(models.Model):
         code_string = "".join(str(item) for item in code_items)
         self.number = code_string
         super().save(*args, **kwargs)
+
