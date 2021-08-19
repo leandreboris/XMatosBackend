@@ -15,13 +15,13 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = (
             'id',
-            'imageArticle',
-            'categorieArticle',
-            'nomArticle',
-            'descriptionArticle',
-            'quantiteArticle',
-            'prixArticle',
-            'dateAjoutArticle',
+            'image',
+            'category',
+            'name',
+            'description',
+            'quantity',
+            'price',
+            'date_added',
         )
 
 

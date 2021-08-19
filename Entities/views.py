@@ -42,14 +42,9 @@ def categorieApi(request, id=0):
         if id != 0:
             categorie = Categorie.objects.get(id=id)
             categorie_serializer = CategorieSerializer(categorie)
-
-            # Send the signal for analytics
-            object_viewed_signal.send(Categorie, instanceID=id, request=request)
             return JsonResponse(categorie_serializer.data, safe = False)
         categorie = Categorie.objects.all()
         categorie_serializer = CategorieSerializer(categorie, many=True)
-
-
         return JsonResponse(categorie_serializer.data, safe = False)
     
     elif request.method=='POST':
@@ -89,7 +84,7 @@ def articleApi(request, id=0):
             article_serializer = ArticleSerializer(article)
 
             # Send the signal for analytics
-            object_viewed_signal.send(Categorie, instanceID=id, request=request)
+            object_viewed_signal.send(Article, instanceID=id, request=request)
 
             return JsonResponse(article_serializer.data, safe = False)
         article = Article.objects.all()

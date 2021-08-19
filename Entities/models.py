@@ -19,16 +19,17 @@ class Categorie(models.Model):
 
 # Article model, following the class diagramm specifications
 class Article(models.Model):
-    imageArticle = models.ImageField(blank=True, null=True)
-    categorieArticle = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    nomArticle = models.CharField(max_length=50)
-    descriptionArticle = models.CharField(max_length=256)
-    quantiteArticle = models.IntegerField()
-    prixArticle = models.FloatField()
-    dateAjoutArticle = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(blank=True, null=True)
+    category = models.ForeignKey(Categorie, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=256)
+    quantity = models.IntegerField()
+    price = models.FloatField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    provider = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nomArticle
+        return self.name
 
 
 
