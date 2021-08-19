@@ -12,9 +12,6 @@ class Categorie(models.Model):
     def __str__(self):
         return self.libelle
 
-    
-    
-
 
 
 # Article model, following the class diagramm specifications
@@ -30,9 +27,6 @@ class Article(models.Model):
 
     def __str__(self):
         return self.name
-
-
-
 
 
 # Mode de livraison model, following the class diagramm specifications

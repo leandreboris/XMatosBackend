@@ -19,7 +19,7 @@ class ObjectViewed(models.Model):
     article_id       = models.PositiveIntegerField()
     article_name = models.CharField(max_length=30)
     content_object  = GenericForeignKey('content_type', 'article_id')
-
+    article_provider = models.CharField(max_length=30)
 
 
     def __str__(self, ):
@@ -47,13 +47,15 @@ def object_viewed_receiver(sender, instanceID, request, *args, **kwargs):
     else :
         _user = request.user
     article = Article.objects.get(id=instanceID)
+    provider = article.provider
 
     new_view_instance = ObjectViewed.objects.create(
                 user=_user, 
                 content_type=c_type,
                 article_id=instanceID,
                 article_name = article,
-                ip_address=ip_address
+                ip_address=ip_address,
+                article_provider = provider
                 )
 
 object_viewed_signal.connect(object_viewed_receiver)
