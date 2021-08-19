@@ -7,10 +7,10 @@ from Users.models import User
 # Categorie model, following the class diagramm specifications
 
 class Categorie(models.Model):
-    libelleCategorie = models.CharField(max_length=256)
+    libelle = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.libelleCategorie
+        return self.libelle
 
     
     
@@ -37,43 +37,43 @@ class Article(models.Model):
 
 # Mode de livraison model, following the class diagramm specifications
 class ModeDeLivraison(models.Model):
-    libelleModeDeLivraison = models.CharField(max_length=50)
-    descriptionModeDeLivraison = models.CharField(max_length=256)
+    libelle = models.CharField(max_length=50)
+    description= models.CharField(max_length=256)
 
     def __str__(self):
-        return self.libelleModeDeLivraison
+        return self.libelle
 
 
 # Mode de paiement model, following the class diagramm specifications
 class ModeDePaiement(models.Model):
-    libelleModeDePaiement = models.CharField(max_length=50)
-    descriptionModeDePaiement = models.CharField(max_length=256)
+    libelle = models.CharField(max_length=50)
+    description = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.libelleModeDePaiement
+        return self.libelle
 
 
 # Commande model, following the class diagramm specifications
 class Commande(models.Model):
-    modeDeLivraisonCommande = models.ForeignKey(ModeDeLivraison, on_delete=models.CASCADE)
-    modeDePaiementCommande = models.ForeignKey(ModeDePaiement, on_delete=models.CASCADE)
-    dateAjoutCommande = models.DateTimeField(auto_now_add=True)
-    descriptionCommande = models.CharField(max_length=256)
+    modeDeLivraison = models.ForeignKey(ModeDeLivraison, on_delete=models.CASCADE)
+    modeDePaiement = models.ForeignKey(ModeDePaiement, on_delete=models.CASCADE)
+    dateAjout = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.dateAjoutCommande
+        return self.dateAjout
 
 
 
 # Facture model, following the class diagramm specifications
 class Facture(models.Model):
-    clientFacture  = models.ForeignKey(User, on_delete=models.CASCADE)
-    datePaiementFacture = models.DateTimeField(auto_now_add=True)
-    prixHtFacture = models.FloatField()
-    totalHtFacture = models.FloatField()
-    totalTtc = models.FloatField()
+    client  = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_bought = models.DateTimeField(auto_now_add=True)
+    ht_price = models.FloatField()
+    total_ht = models.FloatField()
+    total_ttc = models.FloatField()
 
     def __str__(self):
-        return "Facture de " + str(self.clientFacture)
+        return "Facture de " + str(self.client)
 
 
