@@ -61,11 +61,12 @@ class Commande(models.Model):
 
 # Facture model, following the class diagramm specifications
 class Facture(models.Model):
-    client  = models.ForeignKey(User, on_delete=models.CASCADE)
     date_bought = models.DateTimeField(auto_now_add=True)
     ht_price = models.FloatField()
     total_ht = models.FloatField()
     total_ttc = models.FloatField()
+    client  = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return "Facture de " + str(self.client)

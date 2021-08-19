@@ -12,13 +12,6 @@ from Analytics.signals import object_viewed_signal
 
 
 
-
-
-
-
-
-
-
 # Registration APIs
 
 class UserRegistrationAPI(generics.GenericAPIView):

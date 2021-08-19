@@ -7,6 +7,7 @@ from phonenumber_field import modelfields
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
+
 # Handling Users Accounts
 class UserManager(BaseUserManager):
 
@@ -87,6 +88,8 @@ class User(AbstractBaseUser):
     avatar = models.ImageField(null=True, blank=True)
     telephone = modelfields.PhoneNumberField(null=True, blank=True)
     cin = models.CharField(max_length=10)
+
+
     
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
