@@ -11,7 +11,7 @@ from XMatosbackend.utils import get_client_ip
 # Create your models here.
 
 
-class ObjectViewed(models.Model):
+class ArticlesViewed(models.Model):
     user            = models.CharField(max_length=30, blank=True, null=True)
     ip_address      = models.CharField(max_length=120, blank=True, null=True)
     content_type    = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True)
@@ -49,7 +49,7 @@ def object_viewed_receiver(sender, instanceID, request, *args, **kwargs):
     article = Article.objects.get(id=instanceID)
     provider = article.provider
 
-    new_view_instance = ObjectViewed.objects.create(
+    new_view_instance = ArticlesViewed.objects.create(
                 user=_user, 
                 content_type=c_type,
                 article_id=instanceID,

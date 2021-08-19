@@ -1,21 +1,18 @@
-from inspect import iscode
 from .models import *
 from .serializers import *
 
 
-from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 from django.contrib.auth import login
 
 
 
-from rest_framework import  viewsets, permissions
 from rest_framework.parsers import  JSONParser
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-
+from Entities.permissions import IsAdminOrReadOnly
 from Analytics.signals import object_viewed_signal
 
 
@@ -35,7 +32,7 @@ from Analytics.signals import object_viewed_signal
 # Categorie API
 @api_view(['GET', 'POST', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminOrReadOnly])
 def categorieApi(request, id=0):
 
     if request.method == 'GET':
