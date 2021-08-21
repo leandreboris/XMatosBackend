@@ -7,6 +7,17 @@ from phonenumber_field import modelfields
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
+# Facture model, following the class diagramm specifications
+class Facture(models.Model):
+    date_bought = models.DateTimeField(auto_now_add=True)
+    ht_price = models.FloatField()
+    total_ht = models.FloatField()
+    total_ttc = models.FloatField()
+
+
+    def __str__(self):
+        return "Facture de " + str(self.date_bought)
+
 
 # Handling Users Accounts
 class UserManager(BaseUserManager):
@@ -82,12 +93,14 @@ class User(AbstractBaseUser):
 
     username = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30, null=True, blank=True)
-    last_name = models.CharField(max_length=3, null=True, blank=True)
+    last_name = models.CharField(max_length=30, null=True, blank=True)
     adresse = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(max_length=60, unique=True)
     avatar = models.ImageField(null=True, blank=True)
     telephone = modelfields.PhoneNumberField(null=True, blank=True)
     cin = models.CharField(max_length=10)
+
+    factures = models.ManyToManyField(Facture, blank=True)
 
 
     
