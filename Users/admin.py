@@ -19,5 +19,4 @@ class AccountAdmin(UserAdmin):
     
 admin.site.register(User, AccountAdmin)
 
-admin.site.register(Facture)
 

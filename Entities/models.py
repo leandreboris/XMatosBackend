@@ -1,5 +1,16 @@
 from django.db import models
-from Users.models import User 
+
+
+# Facture model, following the class diagramm specifications
+class Facture(models.Model):
+    date_bought = models.DateTimeField(auto_now_add=True)
+    ht_price = models.FloatField()
+    total_ht = models.FloatField()
+    total_ttc = models.FloatField()
+
+
+    def __str__(self):
+        return "Facture de " + str(self.date_bought)
 
 
 
@@ -12,21 +23,6 @@ class Categorie(models.Model):
     def __str__(self):
         return self.libelle
 
-
-
-# Article model, following the class diagramm specifications
-class Article(models.Model):
-    image = models.ImageField(blank=True, null=True)
-    category = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=256)
-    quantity = models.IntegerField()
-    price = models.FloatField()
-    date_added = models.DateTimeField(auto_now_add=True)
-    provider = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
 
 # Mode de livraison model, following the class diagramm specifications
@@ -47,6 +43,8 @@ class ModeDePaiement(models.Model):
         return self.libelle
 
 
+
+
 # Commande model, following the class diagramm specifications
 class Commande(models.Model):
     modeDeLivraison = models.ForeignKey(ModeDeLivraison, on_delete=models.CASCADE)
@@ -56,6 +54,5 @@ class Commande(models.Model):
 
     def __str__(self):
         return self.dateAjout
-
 
 

@@ -93,7 +93,7 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
 
         context = {
             "IP address": ip,
-            "Location" : location_country,
+            "Details" : location,
         }
 
 

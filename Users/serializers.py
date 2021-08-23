@@ -21,21 +21,21 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name','last_ip', 'avatar',)
+        fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name','avatar',)
         extra_kwargs = {'password': {'write_only' : True}}
 
     def create(self, validated_data):
-        user = User.objects.create_user(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['first_name'], validated_data['last_name'], validated_data['last_ip'], validated_data['avatar'])
+        user = User.objects.create_user(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['first_name'], validated_data['last_name'], validated_data['avatar'])
         return user
 
 class ProviderRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'password', 'cin', 'adresse', 'telephone', 'first_name', 'last_name','last_ip', 'avatar',)
+        fields = ('id', 'email', 'username', 'password', 'cin', 'adresse', 'telephone', 'first_name', 'last_name','avatar',)
         extra_kwargs = {'password': {'write_only' : True}}
 
     def create(self, validated_data):
-        user = User.objects.create_provider(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['cin'], validated_data['adresse'], validated_data['telephone'], validated_data['first_name'], validated_data['last_name'], validated_data['last_ip'], validated_data['avatar'])
+        user = User.objects.create_provider(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['cin'], validated_data['adresse'], validated_data['telephone'], validated_data['first_name'], validated_data['last_name'],validated_data['avatar'])
         return user
 
 

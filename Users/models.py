@@ -5,18 +5,9 @@ from django.db import models
 
 from phonenumber_field import modelfields
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from Entities.models import Categorie, Commande, Facture
 
 
-# Facture model, following the class diagramm specifications
-class Facture(models.Model):
-    date_bought = models.DateTimeField(auto_now_add=True)
-    ht_price = models.FloatField()
-    total_ht = models.FloatField()
-    total_ttc = models.FloatField()
-
-
-    def __str__(self):
-        return "Facture de " + str(self.date_bought)
 
 
 # Handling Users Accounts
@@ -101,6 +92,7 @@ class User(AbstractBaseUser):
     cin = models.CharField(max_length=10)
 
     factures = models.ManyToManyField(Facture, blank=True)
+    commandes = models.ManyToManyField(Commande, blank = True)
 
 
     
@@ -140,3 +132,16 @@ class User(AbstractBaseUser):
 
   
 
+# Article model, following the class diagramm specifications
+class Article(models.Model):
+    image = models.ImageField(blank=True, null=True)
+    category = models.ForeignKey(Categorie, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=256)
+    quantity = models.IntegerField()
+    price = models.FloatField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    provider = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name

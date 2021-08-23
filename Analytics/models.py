@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from Users.models import User
-from Entities.models import Article, Categorie
+from Users.models import Article
+from Entities.models import Categorie
 
 from .signals import  object_viewed_signal
 from XMatosbackend.utils import get_client_ip
@@ -27,8 +27,8 @@ class ArticlesViewed(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
-        verbose_name = 'Object Viewed'
-        verbose_name_plural = 'Objects Viewed'
+        verbose_name = 'Article viewed'
+        verbose_name_plural = 'Articles viewed'
 
 
 

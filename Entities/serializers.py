@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from Entities.models import *
-from Users.models import Facture
+from Users.models import Article
 
 
 class CategorieSerializer(serializers.ModelSerializer):
@@ -62,7 +62,6 @@ class FactureSerializer(serializers.ModelSerializer):
         model = Facture
         fields = (
             'id',
-            'client',
             'date_bought',
             'ht_price',
             'total_ht', 
