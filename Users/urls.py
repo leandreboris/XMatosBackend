@@ -3,7 +3,7 @@ from .views import UserRegistrationAPI, LoginAPI, ProviderRegistrationAPI, UserA
 
 urlpatterns = [
     path('auth', include('knox.urls')),
-    path('auth/user', UserAPI.as_view()),
+    path('user', UserAPI.as_view()),
 
     path('auth/login', LoginAPI.as_view()),
     path('auth/register/user', UserRegistrationAPI.as_view(), name='User Registration'),

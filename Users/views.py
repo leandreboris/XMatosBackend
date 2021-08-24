@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 
 from .serializers import UserSerializer, UserRegisterSerializer, LoginSerializer, ProviderRegisterSerializer
-
 from XMatosbackend  import utils
 
 from django.contrib.gis.geoip2 import GeoIP2
-
 from Analytics.signals import object_viewed_signal
+from django.core.mail import EmailMessage
+from Codes.models import Code
+
 
 
 
@@ -30,8 +31,26 @@ class UserRegistrationAPI(generics.GenericAPIView):
         # Tracking the ip address
         ip = utils.get_client_ip(request)
 
-        # Saving the last_ip
+        # Saving the last_ip and setting activity to False
         user.last_ip = ip
+        user.is_active = False
+
+        # Generate the code
+        code = Code.objects.create(user=user)
+
+        # Fetch the email
+        usermail = user.email
+
+        # Email sending
+        email = EmailMessage(
+            'Activate your account',
+            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number), 
+            '',
+            [usermail],
+         
+         )
+        email.send(fail_silently=False)
+
         user.save()
        
         # Using geoip2 to get the location
@@ -71,8 +90,26 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
         # Tracking the ip address
         ip = utils.get_client_ip(request)
 
-        # Saving the last_ip
+        # Saving the last_ip and setting activity to False
         user.last_ip = ip
+        user.is_active = False
+
+        # Generate the code
+        code = Code.objects.create(user=user)
+
+        # Fetch the email
+        usermail = user.email
+
+        # Email sending
+        email = EmailMessage(
+            'Activate your account',
+            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number), 
+            '', 
+            [usermail],
+         
+         )
+        email.send(fail_silently=False)
+
         user.save()
        
         # Using geoip2 to get the location
@@ -93,7 +130,7 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
 
         context = {
             "IP address": ip,
-            "Details" : location,
+            "Localization" : location,
         }
 
 
@@ -136,6 +173,6 @@ class UserAPI(generics.RetrieveAPIView):
   serializer_class = UserSerializer
 
   def get_object(self):
-    object_viewed_signal.send(self.request.user.__class__, instanceID=self.request.user.id, request=self.request)
+    # object_viewed_signal.send(self.request.user.__class__, instanceID=self.request.user.id, request=self.request)
     return self.request.user
   

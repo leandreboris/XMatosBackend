@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from Users.models import Article
-from Entities.models import Categorie
+from django.db.models.query import InstanceCheckMeta
+from Entities.models import Categorie, Article
 
 from .signals import  object_viewed_signal
 from XMatosbackend.utils import get_client_ip
@@ -15,10 +15,10 @@ class ArticlesViewed(models.Model):
     content_type    = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True)
     timestamp       = models.DateTimeField(auto_now_add=True)
     article_id       = models.PositiveIntegerField()
-    article_name = models.CharField(max_length=30)
-    article_category = models.CharField(max_length=256)
+    article_name = models.CharField(max_length=30, blank=True, null=True)
+    article_category = models.CharField(max_length=256,blank=True, null=True)
     content_object  = GenericForeignKey('content_type', 'article_id')
-    article_provider = models.CharField(max_length=30)
+    article_provider = models.CharField(max_length=30,blank=True, null=True)
 
 
     def __str__(self, ):
@@ -46,11 +46,19 @@ def object_viewed_receiver(sender, instanceID, request, *args, **kwargs):
     else :
         _user = request.user
 
-    article = Article.objects.get(id=instanceID)
-    provider = article.provider
 
-    _category = Categorie.objects.get(libelle=article.category)
-    category = _category.libelle
+    # Count and check whether it is empty or not
+    article_results = Article.objects.filter(id=instanceID).count()
+    if article_results == 1:
+        article = Article.objects.get(id=instanceID)
+        provider = article.provider
+        _category = Categorie.objects.get(libelle=article.category)
+        category = _category.libelle
+    else :
+        article = "Unknown"
+        provider = "Unknown"
+        category = "Unknown"
+        provider = "Unknown"
 
 
     new_view_instance = ArticlesViewed.objects.create(

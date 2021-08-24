@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import *
-from Users.models import Article, Facture
 
 
 # Register your models here.

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from Entities.models import *
-from Users.models import Article
 
 
 class CategorieSerializer(serializers.ModelSerializer):

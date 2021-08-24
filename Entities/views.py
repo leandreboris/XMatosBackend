@@ -1,6 +1,5 @@
 from .models import *
 from .serializers import *
-from Users.models import Facture
 
 
 from django.http.response import JsonResponse

@@ -1,16 +1,5 @@
 from Entities import views
-
-
-
 from django.conf.urls import url
-
-
-
-from knox import views as knox_views
-
-
-
-
 
 
 urlpatterns = [
@@ -27,7 +16,6 @@ urlpatterns = [
 
     url(r'^paiements$', views.modedepaiementApi),
     url(r'^paiements/([0-9]+)$', views.modedepaiementApi),
-
 
     url(r'^factures$', views.factureApi),
     url(r'^factures/([0-9]+)$', views.factureApi),
