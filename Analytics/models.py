@@ -32,8 +32,6 @@ class ArticlesViewed(models.Model):
 
 
 
-
-
 def object_viewed_receiver(sender, instanceID, request, *args, **kwargs):
     c_type = ContentType.objects.get_for_model(sender)
     ip_address = None
@@ -51,15 +49,12 @@ def object_viewed_receiver(sender, instanceID, request, *args, **kwargs):
     article_results = Article.objects.filter(id=instanceID).count()
     if article_results == 1:
         article = Article.objects.get(id=instanceID)
+        article.views += 1
+        article.save()
         provider = article.provider
         _category = Categorie.objects.get(libelle=article.category)
         category = _category.libelle
-    else :
-        article = "Unknown"
-        provider = "Unknown"
-        category = "Unknown"
-        provider = "Unknown"
-
+    
 
     new_view_instance = ArticlesViewed.objects.create(
                 username=_user, 

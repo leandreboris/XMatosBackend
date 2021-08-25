@@ -22,6 +22,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'quantity',
             'price',
             'date_added',
+            'views',
         )
 
 

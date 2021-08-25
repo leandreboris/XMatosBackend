@@ -77,6 +77,7 @@ class Article(models.Model):
     quantity = models.IntegerField()
     price = models.FloatField()
     date_added = models.DateTimeField(auto_now_add=True)
+    views = models.PositiveIntegerField(default=0)
     provider = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

@@ -1,14 +1,22 @@
+from Analytics.models import ArticlesViewed
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from rest_framework import viewsets
+
+
 from knox.models import AuthToken
 
-from .serializers import UserSerializer, UserRegisterSerializer, LoginSerializer, ProviderRegisterSerializer
+from .serializers import *
 from XMatosbackend  import utils
 
 from django.contrib.gis.geoip2 import GeoIP2
 from Analytics.signals import object_viewed_signal
 from django.core.mail import EmailMessage
 from Codes.models import Code
+
+from Entities.serializers import FactureSerializer, CommandeSerializer, ArticleSerializer
+from Entities.models import Commande, Facture, Article
+from .models import User
 
 
 
@@ -173,6 +181,50 @@ class UserAPI(generics.RetrieveAPIView):
   serializer_class = UserSerializer
 
   def get_object(self):
-    # object_viewed_signal.send(self.request.user.__class__, instanceID=self.request.user.id, request=self.request)
     return self.request.user
+
+
+# Change user password API
+class ChangePasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
   
+# Update user profile API
+class UpdateProfileView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UpdateUserSerializer
+
+# Get user factures API
+class FactureViewSet(viewsets.ViewSet):
+    permission_classes = [
+    permissions.IsAuthenticated,
+      ]
+    def retrieve(self, request):
+        owner = User.objects.get(id=self.request.user.id)
+        queryset = Facture.objects.filter(owner=owner)
+        serializer = FactureSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+# Get user commandes API
+class CommandeViewSet(viewsets.ViewSet):
+    permission_classes = [
+    permissions.IsAuthenticated,
+      ]
+    def retrieve(self, request):
+        owner = User.objects.get(id=self.request.user.id)
+        queryset = Commande.objects.filter(owner=owner)
+        serializer = CommandeSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+# Get user articles API
+class ArticleViewSet(viewsets.ViewSet):
+    permission_classes = [
+    permissions.IsAuthenticated,
+      ]
+    def retrieve(self, request):
+        provider = User.objects.get(id=self.request.user.id)
+        queryset = Article.objects.filter(provider=provider)
+        serializer = ArticleSerializer(queryset, many=True)
+        return Response(serializer.data)
