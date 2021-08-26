@@ -1,3 +1,4 @@
+from XMatosbackend.utils import get_client_ip
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
@@ -45,6 +46,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
 
         instance.set_password(validated_data['password'])
+        instance.last_ip = get_client_ip(self.context['request'])
         instance.save()
 
         return instance
@@ -54,11 +56,9 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email')
+        fields = ('username', 'first_name', 'last_name', 'email', 'telephone','adresse', 'avatar',)
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -81,14 +81,24 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         if user.pk != instance.pk:
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
-
-        instance.first_name = validated_data['first_name']
-        instance.last_name = validated_data['last_name']
-        instance.email = validated_data['email']
-        instance.username = validated_data['username']
-
+        
+        if validated_data['first_name'] != '':
+            instance.first_name = validated_data['first_name']
+        if validated_data['last_name'] != '':  
+            instance.last_name = validated_data['last_name']
+        if validated_data['email'] != '':
+            instance.email = validated_data['email']
+        if validated_data['username'] != '':
+            instance.username = validated_data['username']
+        if validated_data['telephone'] != '':
+            instance.telephone = validated_data['telephone']
+        if validated_data['avatar'] != '':
+            instance.avatar = validated_data['avatar']
+        if validated_data['adresse'] != '':
+            instance.avatar = validated_data['adresse']
+        
+        instance.last_ip = get_client_ip(self.context['request'])
         instance.save()
-
         return instance
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
@@ -103,6 +113,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['first_name'], validated_data['last_name'], validated_data['avatar'])
+        user.last_ip = get_client_ip(self.context['request'])
+        user.save()
         return user
 
 class ProviderRegisterSerializer(serializers.ModelSerializer):
@@ -113,6 +125,8 @@ class ProviderRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_provider(validated_data['email'],validated_data['username'], validated_data['password'], validated_data['cin'], validated_data['adresse'], validated_data['telephone'], validated_data['first_name'], validated_data['last_name'],validated_data['avatar'])
+        user.last_ip = get_client_ip(self.context['request'])
+        user.save()
         return user
 
 
@@ -132,6 +146,8 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         user = authenticate(**data)
         if user and user.is_active:
+            user.last_ip = get_client_ip(self.context['request'])
+            user.save()
             return user
         raise serializers.ValidationError("Incorrect Credentials")
 

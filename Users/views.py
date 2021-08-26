@@ -15,11 +15,13 @@ from django.core.mail import EmailMessage
 from Codes.models import Code
 
 from Entities.serializers import FactureSerializer, CommandeSerializer, ArticleSerializer
+from Codes.serializers import CodeSerializer
 from Entities.models import Commande, Facture, Article
 from .models import User
 
 
-
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 
 # Registration APIs
 
@@ -46,13 +48,19 @@ class UserRegistrationAPI(generics.GenericAPIView):
         # Generate the code
         code = Code.objects.create(user=user)
 
-        # Fetch the email
+        # Fetch the email and generate the token
         usermail = user.email
+        token = AuthToken.objects.create(user)[1]
+
+        # URL generation
+        current_site = get_current_site(request).domain
+        absolute_link='http://' + current_site + reverse('verify-code') + '?id=' + str(code.id)
+
 
         # Email sending
         email = EmailMessage(
             'Activate your account',
-            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number), 
+            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number) +' on this URL ' + absolute_link, 
             '',
             [usermail],
          
@@ -77,9 +85,12 @@ class UserRegistrationAPI(generics.GenericAPIView):
 
         return Response({
             "user" : UserSerializer(user, context=self.get_serializer_context()).data,
-            "token" : AuthToken.objects.create(user)[1],
+            "token" : token,
             "context" : context,
         })
+
+
+
 
 
 
@@ -105,14 +116,20 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
         # Generate the code
         code = Code.objects.create(user=user)
 
-        # Fetch the email
+        # Fetch the email and generate the token
         usermail = user.email
+        token = AuthToken.objects.create(user)[1]
+
+        # URL generation
+        current_site = get_current_site(request).domain
+        absolute_link='http://' + current_site + reverse('verify-code') + '?id=' + str(code.id)
+
 
         # Email sending
         email = EmailMessage(
             'Activate your account',
-            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number), 
-            '', 
+            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number) +' on this URL ' + absolute_link, 
+            '',
             [usermail],
          
          )
@@ -149,6 +166,30 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
         })
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# Code verification 
+class VerifyCode(generics.GenericAPIView):
+
+  serializer_class = CodeSerializer
+
+
+  def post(self, request):
+
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try: 
+      id=request.GET.get('id')
+      code = Code.objects.get(id=id)
+      user = User.objects.get(username=code.user)
+      user.is_active=True
+      user.save()
+      return Response({"Email successfully activated. Please sign up to your account dear " + user.username})
+    except :
+      return Response({"Error"})
+
+
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -171,6 +212,8 @@ class LoginAPI(generics.GenericAPIView):
       "token": token
     })
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 
 # Retrieve user API
 # Get User API
@@ -182,6 +225,8 @@ class UserAPI(generics.RetrieveAPIView):
 
   def get_object(self):
     return self.request.user
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 
 # Change user password API

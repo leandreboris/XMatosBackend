@@ -4,6 +4,6 @@ from .models import Code
 class CodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Code
-        fields = ('id', 'user', 'number', )
+        fields = ('id', 'number', )
 
     
