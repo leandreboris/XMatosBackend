@@ -75,6 +75,8 @@ class UserManager(BaseUserManager):
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
+                  'email': 'email'}
 
 
 # User model 
@@ -102,9 +104,13 @@ class User(AbstractBaseUser):
     is_login = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_activated = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_provider = models.BooleanField(default=False)
+    
+    auth_provider = models.CharField(
+        max_length=255, blank=False,
+        null=False, default=AUTH_PROVIDERS.get('email'))
 
     objects = UserManager()
 

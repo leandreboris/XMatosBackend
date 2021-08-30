@@ -1,4 +1,3 @@
-from django.views.generic.base import RedirectView
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -168,35 +167,6 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
             "token" : AuthToken.objects.create(user)[1],
             "analytics" : context,
         })
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
-# Social authentifications views
-
-class GoogleSocialAuth(generics.GenericAPIView):
-  serializer_class = ""
-
-  
-  def post(self, request):
-    serializer = self.serializer_class(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    
-    data = ((serializer.validated_data['auth_token']))
-    return Response(data)
-
-
-class FacebookSocialAuth(generics.GenericAPIView):
-  serializer_class = ""
-
-  
-  def post(self, request):
-    serializer = self.serializer_class(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    
-    data = ((serializer.validated_data['auth_token']))
-    return Response(data)
-
-
-
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
@@ -215,7 +185,7 @@ class VerifyCode(generics.GenericAPIView):
       code = Code.objects.get(id=id)
       user = User.objects.get(username=code.user)
       user.is_active=True
-      user.is_activated = True
+      user.is_verified = True
       user.save()
       return redirect('login')
     except :

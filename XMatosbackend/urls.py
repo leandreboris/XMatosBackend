@@ -26,6 +26,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/',include('Entities.urls')),
     url(r'^api/',include('Users.urls')),
+    url(r'^api/',include('Social_auth.urls')),
+
 
 
 ]
