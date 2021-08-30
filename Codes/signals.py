@@ -7,7 +7,7 @@ from .models import Code
 
 @receiver(post_save, sender=User)
 def post_save_generate_code(sender, instance, created, *args, **kwargs):
-    if created and instance.is_local is False:
+    if created and instance.is_same_ip is False:
         Code.objects.create(user=instance)
 
 

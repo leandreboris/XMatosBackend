@@ -1,4 +1,4 @@
-from Analytics.models import ArticlesViewed
+from django.views.generic.base import RedirectView
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -22,6 +22,10 @@ from .models import User
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+from django.shortcuts import redirect
+
+
+
 
 # Registration APIs
 
@@ -29,7 +33,7 @@ class UserRegistrationAPI(generics.GenericAPIView):
 
 
     serializer_class = UserRegisterSerializer
-    
+
     def post(self, request, *args, **kwargs):
 
         # Saving data
@@ -98,7 +102,7 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
 
 
     serializer_class = ProviderRegisterSerializer
-    
+
     def post(self, request, *args, **kwargs):
       
        # Saving data
@@ -164,6 +168,34 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
             "token" : AuthToken.objects.create(user)[1],
             "analytics" : context,
         })
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# Social authentifications views
+
+class GoogleSocialAuth(generics.GenericAPIView):
+  serializer_class = ""
+
+  
+  def post(self, request):
+    serializer = self.serializer_class(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    
+    data = ((serializer.validated_data['auth_token']))
+    return Response(data)
+
+
+class FacebookSocialAuth(generics.GenericAPIView):
+  serializer_class = ""
+
+  
+  def post(self, request):
+    serializer = self.serializer_class(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    
+    data = ((serializer.validated_data['auth_token']))
+    return Response(data)
+
+
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -172,7 +204,6 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
 class VerifyCode(generics.GenericAPIView):
 
   serializer_class = CodeSerializer
-
 
   def post(self, request):
 
@@ -184,8 +215,9 @@ class VerifyCode(generics.GenericAPIView):
       code = Code.objects.get(id=id)
       user = User.objects.get(username=code.user)
       user.is_active=True
+      user.is_activated = True
       user.save()
-      return Response({"Email successfully activated. Please sign up to your account dear " + user.username})
+      return redirect('login')
     except :
       return Response({"Error"})
 
@@ -199,13 +231,13 @@ class VerifyCode(generics.GenericAPIView):
 class LoginAPI(generics.GenericAPIView):
 
   serializer_class = LoginSerializer
-
+  
   def post(self, request, *args, **kwargs):
 
     serializer = self.get_serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-
     user = serializer.validated_data
+
     _, token = AuthToken.objects.create(user)
     return Response({
       "user": UserSerializer(user, context=self.get_serializer_context()).data,
@@ -273,3 +305,6 @@ class ArticleViewSet(viewsets.ViewSet):
         queryset = Article.objects.filter(provider=provider)
         serializer = ArticleSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 

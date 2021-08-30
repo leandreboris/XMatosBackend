@@ -43,12 +43,14 @@ INSTALLED_APPS = [
     'Users',
     'Codes',
     'Analytics',
+    'Social_auth',
 
     'corsheaders',
     'rest_framework',
     'phonenumber_field',
     'knox',
     'geoip2',
+    
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,27 @@ REST_FRAMEWORK = {
 
 
 
+
+
+# Social accounts configurations
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SITE_ID = 3
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
 # Production
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -80,7 +103,7 @@ ROOT_URLCONF = 'XMatosbackend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
