@@ -145,7 +145,7 @@ class LoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         user = authenticate(**data)
-        if user and user.is_activated:
+        if user and user.is_verified:
             user.last_ip = get_client_ip(self.context['request'])
             user.save()
             return user

@@ -91,8 +91,6 @@ class User(AbstractBaseUser):
     telephone = modelfields.PhoneNumberField(null=True, blank=True)
     cin = models.CharField(max_length=10)
 
-    
-
 
     
     date_joined = models.DateTimeField(auto_now_add=True)
