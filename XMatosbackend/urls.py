@@ -19,6 +19,8 @@ from django.urls import path
 from django.conf.urls import url, include
 from django.conf.urls.static import static 
 from django.conf import settings
+
+
 from rest_framework_swagger.views import get_swagger_view
 
 
@@ -31,7 +33,9 @@ urlpatterns = [
     url(r'^api/',include('Entities.urls')),
     url(r'^api/',include('Users.urls')),
     url(r'^api/',include('Social_auth.urls')),
-    url(r'^$', schema_view)
+    url('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+
+    url(r'^doc$', schema_view)
 
 
 ]

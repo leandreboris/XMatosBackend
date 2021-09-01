@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import *
+from Profile_updates.views import * 
 
 
 

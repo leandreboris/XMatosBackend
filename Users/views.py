@@ -231,18 +231,6 @@ class UserAPI(generics.RetrieveAPIView):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 
-# Change user password API
-class ChangePasswordView(generics.UpdateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = ChangePasswordSerializer
-  
-# Update user profile API
-class UpdateProfileView(generics.UpdateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UpdateUserSerializer
-
 # Get user factures API
 class FactureViewSet(viewsets.ViewSet):
     permission_classes = [

@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
 
 # Application definition
 
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'Codes',
     'Analytics',
     'Social_auth',
+    'Profile_updates',
 
     'corsheaders',
     'rest_framework',
@@ -51,6 +55,8 @@ INSTALLED_APPS = [
     'knox',
     'geoip2',
     'rest_framework_swagger',
+    'django_rest_passwordreset',
+
 
     
 ]
@@ -95,6 +101,8 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         }
     }
+
+    
 }
 
 SITE_ID = 3
