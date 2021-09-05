@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^api/',include('Social_auth.urls')),
     url('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 
-    url(r'^doc$', schema_view)
+    url(r'^docs$', schema_view)
 
 
 ]

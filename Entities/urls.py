@@ -5,23 +5,23 @@ from django.conf.urls import url
 urlpatterns = [
 
 
-    url(r'^categories$', views.categorieApi),
-    url(r'^categories/([0-9]+)$', views.categorieApi),
+    url(r'^categories$', views.categorieApi_list),
+    url(r'^categories/([0-9]+)$', views.categorieApi_details),
 
-    url(r'^articles$', views.articleApi),
-    url(r'^articles/([0-9]+)$', views.articleApi),
+    url(r'^articles$', views.articleApi_list),
+    url(r'^articles/([0-9]+)$', views.articleApi_details),
 
-    url(r'^livraisons$', views.modedelivraisonApi),
-    url(r'^livraisons/([0-9]+)$', views.modedelivraisonApi),
+    url(r'^livraisons$', views.modeDeLivraisonApi_list),
+    url(r'^livraisons/([0-9]+)$', views.modeDeLivraisonApi_details),
 
-    url(r'^paiements$', views.modedepaiementApi),
-    url(r'^paiements/([0-9]+)$', views.modedepaiementApi),
+    url(r'^paiements$', views.modeDePaiementApi_list),
+    url(r'^paiements/([0-9]+)$', views.modeDePaiementApi_details),
 
-    url(r'^factures$', views.factureApi),
-    url(r'^factures/([0-9]+)$', views.factureApi),
+    url(r'^factures$', views.factureApi_list),
+    url(r'^factures/([0-9]+)$', views.factureApi_details),
 
-    url(r'^commandes$', views.commandeApi),
-    url(r'^commandes/([0-9]+)$', views.commandeApi),
+    url(r'^commandes$', views.commandeApi_list),
+    url(r'^commandes/([0-9]+)$', views.commandeApi_details),
 
 
 

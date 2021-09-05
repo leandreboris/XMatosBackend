@@ -2,7 +2,7 @@ from .models import *
 from .serializers import *
 
 
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from django.contrib.auth import login
 
 
@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from Entities.permissions import IsAdminOrReadOnly
+from Entities.permissions import IsAdminOrReadOnly, IsProviderOrReadOnly
 from Analytics.signals import object_viewed_signal
 
 
@@ -30,39 +30,56 @@ from Analytics.signals import object_viewed_signal
 
 
 # Categorie API
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def categorieApi(request, id=0):
+def categorieApi_list(request):
+    """
+    List all categories, or create a new categorie of products.
+
+    """
+    if request.method == 'GET':
+        categories = Categorie.objects.all()
+        serializer = CategorieSerializer(categories, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = CategorieSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminOrReadOnly])
+def categorieApi_details(request, id):
+    """
+    Get, update or delete a categorie of products.
+
+    """
+    try:
+        categorie = Categorie.objects.get(id=id)
+    except Categorie.DoesNotExist:
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
-        if id != 0:
-            categorie = Categorie.objects.get(id=id)
-            categorie_serializer = CategorieSerializer(categorie)
-            return JsonResponse(categorie_serializer.data, safe = False)
-        categorie = Categorie.objects.all()
-        categorie_serializer = CategorieSerializer(categorie, many=True)
+        categorie_serializer = CategorieSerializer(categorie)
         return JsonResponse(categorie_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        categorie_data = JSONParser().parse(request)
-        categorie_serializer = CategorieSerializer(data=categorie_data)
-        if categorie_serializer.is_valid():
-            categorie_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
 
     elif request.method=='PUT':
-        categorie_data = JSONParser().parse(request)
-        categorie = Categorie.objects.get(id=categorie_data['id'])
-        categorie_serializer = CategorieSerializer(categorie, data=categorie_data)
-        if categorie_serializer.is_valid() :
-            categorie_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = CategorieSerializer(categorie, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        categorie = Categorie.objects.get(id=id)
         categorie.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
@@ -70,201 +87,281 @@ def categorieApi(request, id=0):
 
 # Article API
 
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST', ])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticatedOrReadOnly])
-def articleApi(request, id=0):
+@permission_classes([IsProviderOrReadOnly])
+def articleApi_list(request):
+    """
+    List all articles, or create a new article.
+
+    """
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsProviderOrReadOnly])
+def articleApi_details(request, id):
+    """
+    Get, update or delete a categorie of products.
+
+    """
+    try:
+        article = Article.objects.get(id=id)
+    except Article.DoesNotExist:
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
-        if id != 0:
-            article = Article.objects.get(id=id)
-            article_serializer = ArticleSerializer(article)
-
-            # Send the signal for analytics
-            object_viewed_signal.send(Article, instanceID=id, request=request)
-
-            return JsonResponse(article_serializer.data, safe = False)
-        article = Article.objects.all()
-        article_serializer = ArticleSerializer(article, many=True)
+        article_serializer = ArticleSerializer(article)
+        object_viewed_signal.send(Article, instanceID=id, request=request)
         return JsonResponse(article_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        article_data = JSONParser().parse(request)
-        article_serializer = ArticleSerializer(data=article_data)
-        if article_serializer.is_valid():
-            article_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
 
     elif request.method=='PUT':
-        article_data = JSONParser().parse(request)
-        article = Article.objects.get(id=article_data['id'])
-        article_serializer = ArticleSerializer(article, data=article_data)
-        if article_serializer.is_valid() :
-            article_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(article, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        article = Article.objects.get(id=id)
         article.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
 
 
 # Mode de livraison API
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST', ])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def modedelivraisonApi(request, id=0):
+def modeDeLivraisonApi_list(request):
+    """
+    List all modes, or create a new mode.
+
+    """
     if request.method == 'GET':
-        if id != 0:
-            modedelivraison = ModeDeLivraison.objects.get(id=id)
-            modedelivraison_serializer = ModeDeLivraisonSerializer(modedelivraison)
+        livraisons = ModeDeLivraison.objects.all()
+        serializer = ModeDeLivraisonSerializer(livraisons, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
-        
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ModeDeLivraisonSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
-            return JsonResponse(modedelivraison_serializer.data, safe = False)
-        modedelivraison = ModeDeLivraison.objects.all()
-        modedelivraison_serializer = ModeDeLivraisonSerializer(modedelivraison, many=True)
 
 
-        return JsonResponse(modedelivraison_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        modedelivraison_data = JSONParser().parse(request)
-        modedelivraison_serializer = ModeDeLivraisonSerializer(data=modedelivraison_data)
-        if modedelivraison_serializer.is_valid():
-            modedelivraison_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminOrReadOnly])
+def modeDeLivraisonApi_details(request, id):
+    """
+    Get, update or delete a delivery mode of products.
+
+    """
+    try:
+        mode = ModeDeLivraison.objects.get(id=id)
+    except ModeDeLivraison.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        mode_serializer = ModeDeLivraisonSerializer(mode)
+        return JsonResponse(mode_serializer.data, safe = False)
 
     elif request.method=='PUT':
-        modedelivraison_data = JSONParser().parse(request)
-        modedelivraison = ModeDeLivraison.objects.get(id=modedelivraison_data['id'])
-        modedelivraison_serializer = ModeDeLivraisonSerializer(modedelivraison, data=modedelivraison_data)
-        if modedelivraison_serializer.is_valid() :
-            modedelivraison_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = ModeDeLivraison(mode, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        modedelivraison = ModeDeLivraison.objects.get(id=id)
-        modedelivraison.delete()
+        mode.delete()
         return JsonResponse("Deleted successfully", safe=False)
+
+
 
 
 # Mode de paiement API
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def modedepaiementApi(request, id=0):
+def modeDePaiementApi_list(request):
+    """
+    List all modes, or create a new mode.
+
+    """
+    if request.method == 'GET':
+        paiements = ModeDePaiement.objects.all()
+        serializer = ModeDePaiementSerializer(paiements, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ModeDePaiementSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminOrReadOnly])
+def modeDePaiementApi_details(request, id):
+    """
+    Get, update or delete a payment mode of products.
+
+    """
+    try:
+        mode = ModeDePaiement.objects.get(id=id)
+    except ModeDePaiement.DoesNotExist:
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
-        if id != 0:
-            modedepaiement = ModeDePaiement.objects.get(id=id)
-            modedepaiement_serializer = ModeDePaiementSerializer(modedepaiement)
-
-            return JsonResponse(modedepaiement_serializer.data, safe = False)
-        modedepaiement = ModeDePaiement.objects.all()
-        modedepaiement_serializer = ModeDePaiementSerializer(modedepaiement, many=True)
-        return JsonResponse(modedepaiement_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        modedepaiement_data = JSONParser().parse(request)
-        modedepaiement_serializer = ModeDePaiementSerializer(data=modedepaiement_data)
-        if modedepaiement_serializer.is_valid():
-            modedepaiement_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
+        mode_serializer = ModeDePaiementSerializer(mode)
+        return JsonResponse(mode_serializer.data, safe = False)
 
     elif request.method=='PUT':
-        modedepaiement_data = JSONParser().parse(request)
-        modedepaiement = ModeDePaiement.objects.get(id=modedepaiement_data['id'])
-        modedepaiement_serializer = ModeDePaiementSerializer(modedepaiement, data=modedepaiement_data)
-        if modedepaiement_serializer.is_valid() :
-            modedepaiement_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = ModeDePaiementSerializer(mode, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        modedepaiement = ModeDePaiement.objects.get(id=id)
-        modedepaiement.delete()
+        mode.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
 
+
 # Facture API
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def factureApi(request, id=0):
+def factureApi_list(request):
+    """
+    List all modes, or create a new mode.
+
+    """
+    if request.method == 'GET':
+        factures = Facture.objects.all()
+        serializer = FactureSerializer(factures, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = FactureSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminOrReadOnly])
+def factureApi_details(request, id):
+    """
+    Get, update or delete a facture.
+
+    """
+    try:
+        facture = Facture.objects.get(id=id)
+    except Facture.DoesNotExist:
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
-        if id != 0:
-            facture = Facture.objects.get(id=id)
-            facture_serializer = FactureSerializer(facture)
-            return JsonResponse(facture_serializer.data, safe = False)
-        facture = Facture.objects.all()
-        facture_serializer = FactureSerializer(facture, many=True)
+        facture_serializer = Facture(facture)
         return JsonResponse(facture_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        facture_data = JSONParser().parse(request)
-        facture_serializer = FactureSerializer(data=facture_data)
-        if facture_serializer.is_valid():
-            facture_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
 
     elif request.method=='PUT':
-        facture_data = JSONParser().parse(request)
-        facture = Facture.objects.get(id=facture_data['id'])
-        facture_serializer = FactureSerializer(facture, data=facture_data)
-        if facture_serializer.is_valid() :
-            facture_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = FactureSerializer(facture, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        facture = Facture.objects.get(id=id)
         facture.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
 
 
 # Commande API
-@api_view(['GET', 'POST', 'PUT', 'DELETE',])
+@api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def commandeApi(request, id=0):
+def commandeApi_list(request):
+    """
+    List all modes, or create a new commande.
+
+    """
+    if request.method == 'GET':
+        commandes = Commande.objects.all()
+        serializer = CommandeSerializer(commandes, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = CommandeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE',])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def commandeApi_details(request, id):
+    """
+    Get, update or delete a commande.
+
+    """
+    try:
+        commande = Commande.objects.get(id=id)
+    except Commande.DoesNotExist:
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
-        if id != 0:
-            commande = Commande.objects.get(id=id)
-            commande_serializer = CommandeSerializer(commande)
-            return JsonResponse(commande_serializer.data, safe = False)
-        commande = Commande.objects.all()
-        commande_serializer = CommandeSerializer(commande, many=True)
+        commande_serializer = CommandeSerializer(commande)
         return JsonResponse(commande_serializer.data, safe = False)
-    
-    elif request.method=='POST':
-        commande_data = JSONParser().parse(request)
-        commande_serializer = CommandeSerializer(data=commande_data)
-        if commande_serializer.is_valid():
-            commande_serializer.save()
-            return JsonResponse("Created successfully!!" , safe=False)
-        return JsonResponse("Failed to create.",safe=False)
 
     elif request.method=='PUT':
-        commande_data = JSONParser().parse(request)
-        commande = Commande.objects.get(id=commande_data['id'])
-        commande_serializer = CommandeSerializer(commande, data=commande_data)
-        if commande_serializer.is_valid() :
-            commande_serializer.save()
-            return JsonResponse("Updated succesfully", safe=False)
-        return JsonResponse("Failed to update", safe=False)
+        data = JSONParser().parse(request)
+        serializer = CommandeSerializer(commande, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE' :
-        commande = Commande.objects.get(id=id)
         commande.delete()
         return JsonResponse("Deleted successfully", safe=False)
