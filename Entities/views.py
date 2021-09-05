@@ -2,16 +2,18 @@ from .models import *
 from .serializers import *
 
 
-from django.http.response import JsonResponse, HttpResponse
+from django.http.response import JsonResponse
 from django.contrib.auth import login
 
 
 
 from rest_framework.parsers import  JSONParser
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework import status
+from rest_framework.response import Response
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from Entities.permissions import IsAdminOrReadOnly, IsProviderOrReadOnly
 from Analytics.signals import object_viewed_signal
 
@@ -24,16 +26,11 @@ from Analytics.signals import object_viewed_signal
 
 """                             REST APIs for required entities                      """
 
-
-
-
-
-
 # Categorie API
 @api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def categorieApi_list(request):
+def categorieApi_list(request, format=None):
     """
     List all categories, or create a new categorie of products.
 
@@ -41,15 +38,14 @@ def categorieApi_list(request):
     if request.method == 'GET':
         categories = Categorie.objects.all()
         serializer = CategorieSerializer(categories, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = CategorieSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -57,7 +53,7 @@ def categorieApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def categorieApi_details(request, id):
+def categorieApi_details(request, id, format=None):
     """
     Get, update or delete a categorie of products.
 
@@ -65,23 +61,23 @@ def categorieApi_details(request, id):
     try:
         categorie = Categorie.objects.get(id=id)
     except Categorie.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         categorie_serializer = CategorieSerializer(categorie)
-        return JsonResponse(categorie_serializer.data, safe = False)
+        return Response(categorie_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = CategorieSerializer(categorie, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         categorie.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -90,7 +86,7 @@ def categorieApi_details(request, id):
 @api_view(['GET', 'POST', ])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsProviderOrReadOnly])
-def articleApi_list(request):
+def articleApi_list(request, format=None):
     """
     List all articles, or create a new article.
 
@@ -98,15 +94,14 @@ def articleApi_list(request):
     if request.method == 'GET':
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = ArticleSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -114,7 +109,7 @@ def articleApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsProviderOrReadOnly])
-def articleApi_details(request, id):
+def articleApi_details(request, id, format=None):
     """
     Get, update or delete a categorie of products.
 
@@ -122,24 +117,24 @@ def articleApi_details(request, id):
     try:
         article = Article.objects.get(id=id)
     except Article.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         article_serializer = ArticleSerializer(article)
         object_viewed_signal.send(Article, instanceID=id, request=request)
-        return JsonResponse(article_serializer.data, safe = False)
+        return Response(article_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = ArticleSerializer(article, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         article.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -147,7 +142,7 @@ def articleApi_details(request, id):
 @api_view(['GET', 'POST', ])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def modeDeLivraisonApi_list(request):
+def modeDeLivraisonApi_list(request, format=None):
     """
     List all modes, or create a new mode.
 
@@ -155,15 +150,14 @@ def modeDeLivraisonApi_list(request):
     if request.method == 'GET':
         livraisons = ModeDeLivraison.objects.all()
         serializer = ModeDeLivraisonSerializer(livraisons, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = ModeDeLivraisonSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -171,7 +165,7 @@ def modeDeLivraisonApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def modeDeLivraisonApi_details(request, id):
+def modeDeLivraisonApi_details(request, id, format=None):
     """
     Get, update or delete a delivery mode of products.
 
@@ -179,23 +173,23 @@ def modeDeLivraisonApi_details(request, id):
     try:
         mode = ModeDeLivraison.objects.get(id=id)
     except ModeDeLivraison.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         mode_serializer = ModeDeLivraisonSerializer(mode)
-        return JsonResponse(mode_serializer.data, safe = False)
+        return Response(mode_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = ModeDeLivraison(mode, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         mode.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -204,7 +198,7 @@ def modeDeLivraisonApi_details(request, id):
 @api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def modeDePaiementApi_list(request):
+def modeDePaiementApi_list(request, format=None):
     """
     List all modes, or create a new mode.
 
@@ -212,15 +206,14 @@ def modeDePaiementApi_list(request):
     if request.method == 'GET':
         paiements = ModeDePaiement.objects.all()
         serializer = ModeDePaiementSerializer(paiements, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = ModeDePaiementSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -228,7 +221,7 @@ def modeDePaiementApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def modeDePaiementApi_details(request, id):
+def modeDePaiementApi_details(request, id, format=None):
     """
     Get, update or delete a payment mode of products.
 
@@ -236,23 +229,23 @@ def modeDePaiementApi_details(request, id):
     try:
         mode = ModeDePaiement.objects.get(id=id)
     except ModeDePaiement.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         mode_serializer = ModeDePaiementSerializer(mode)
-        return JsonResponse(mode_serializer.data, safe = False)
+        return Response(mode_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = ModeDePaiementSerializer(mode, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         mode.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -260,7 +253,7 @@ def modeDePaiementApi_details(request, id):
 @api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def factureApi_list(request):
+def factureApi_list(request, format=None):
     """
     List all modes, or create a new mode.
 
@@ -268,15 +261,14 @@ def factureApi_list(request):
     if request.method == 'GET':
         factures = Facture.objects.all()
         serializer = FactureSerializer(factures, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = FactureSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -284,7 +276,7 @@ def factureApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdminOrReadOnly])
-def factureApi_details(request, id):
+def factureApi_details(request, id, format=None):
     """
     Get, update or delete a facture.
 
@@ -292,23 +284,23 @@ def factureApi_details(request, id):
     try:
         facture = Facture.objects.get(id=id)
     except Facture.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         facture_serializer = Facture(facture)
-        return JsonResponse(facture_serializer.data, safe = False)
+        return Response(facture_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = FactureSerializer(facture, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         facture.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -316,7 +308,7 @@ def factureApi_details(request, id):
 @api_view(['GET', 'POST',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def commandeApi_list(request):
+def commandeApi_list(request, format=None):
     """
     List all modes, or create a new commande.
 
@@ -324,15 +316,14 @@ def commandeApi_list(request):
     if request.method == 'GET':
         commandes = Commande.objects.all()
         serializer = CommandeSerializer(commandes, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
+        return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = CommandeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -340,7 +331,7 @@ def commandeApi_list(request):
 @api_view(['GET', 'PUT', 'DELETE',])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def commandeApi_details(request, id):
+def commandeApi_details(request, id, format=None):
     """
     Get, update or delete a commande.
 
@@ -348,20 +339,20 @@ def commandeApi_details(request, id):
     try:
         commande = Commande.objects.get(id=id)
     except Commande.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         commande_serializer = CommandeSerializer(commande)
-        return JsonResponse(commande_serializer.data, safe = False)
+        return Response(commande_serializer.data)
 
     elif request.method=='PUT':
         data = JSONParser().parse(request)
         serializer = CommandeSerializer(commande, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE' :
         commande.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)

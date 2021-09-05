@@ -1,5 +1,7 @@
 from Entities import views
 from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
+
 
 
 urlpatterns = [
@@ -23,6 +25,6 @@ urlpatterns = [
     url(r'^commandes$', views.commandeApi_list),
     url(r'^commandes/([0-9]+)$', views.commandeApi_details),
 
-
-
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
