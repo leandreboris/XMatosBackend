@@ -7,7 +7,7 @@ from Profile_updates.views import *
 urlpatterns = [
 
 
-    path('auth', include('knox.urls')),
+    path('auth/', include('knox.urls')),
     path('auth/login', LoginAPI.as_view(), name='login'),
     path('auth/register/user', UserRegistrationAPI.as_view(), name='User Registration'),
     path('auth/register/provider', ProviderRegistrationAPI.as_view(), name='Provider Registration'),

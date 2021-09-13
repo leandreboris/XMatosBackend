@@ -9,7 +9,6 @@ from .serializers import *
 from XMatosbackend  import utils
 
 from django.contrib.gis.geoip2 import GeoIP2
-from Analytics.signals import object_viewed_signal
 from django.core.mail import EmailMessage
 from Codes.models import Code
 

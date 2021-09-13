@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import GoogleSocialAuthSerializer
+from .serializers import GoogleSocialAuthSerializer, FacebookSocialAuthSerializer
 
 
 
@@ -21,8 +21,11 @@ class GoogleSocialAuth(generics.GenericAPIView):
     return Response(data)
 
 
+
+# Facebook Social authentifications view
+
 class FacebookSocialAuth(generics.GenericAPIView):
-  serializer_class = ""
+  serializer_class = FacebookSocialAuthSerializer
 
   
   def post(self, request):
