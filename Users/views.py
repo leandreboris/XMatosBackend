@@ -102,70 +102,68 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
     serializer_class = ProviderRegisterSerializer
 
     def post(self, request, *args, **kwargs):
-      
-       # Saving data
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        try : 
+          # Saving data
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
 
-        # Tracking the ip address
-        ip = utils.get_client_ip(request)
+            # Tracking the ip address
+            ip = utils.get_client_ip(request)
 
-        # Saving the last_ip and setting activity to False
-        user.last_ip = ip
-        user.is_active = False
+            # Using geoip2 to get the location
+            g = GeoIP2()
+            location = g.city("41.77.119.167") # Production, normally tracked IP
+            location_country = location["country_name"]
 
-        # Generate the code
-        code = Code.objects.create(user=user)
+            # We check whether the location is local or not (This is for a test)
+            if location_country != "Morocco":
+              # Another API for the code verification
+              print(location_country)
 
-        # Fetch the email and generate the token
-        usermail = user.email
-        token = AuthToken.objects.create(user)[1]
+            # Saving the last_ip and setting activity to False
+            user.last_ip = ip
+            user.is_active = False
+            user.is_verified = False
 
-        # URL generation
-        current_site = get_current_site(request).domain
-        absolute_link='http://' + current_site + reverse('verify-code') + '?id=' + str(code.id)
+            # Generate the code
+            code = Code.objects.create(user=user)
 
+            # Fetch the email and generate the token
+            usermail = user.email
+            token = AuthToken.objects.create(user)[1]
 
-        # Email sending
-        email = EmailMessage(
-            'Activate your account',
-            'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number) +' on this URL ' + absolute_link, 
-            '',
-            [usermail],
-         
-         )
-        email.send(fail_silently=False)
+            # URL generation
+            current_site = get_current_site(request).domain
+            absolute_link='http://' + current_site + reverse('verify-code') + '?id=' + str(code.id)
 
-        user.save()
-       
-        # Using geoip2 to get the location
-        g = GeoIP2()
-        location = g.city("41.77.119.167") # Production, normally tracked IP
-        location_country = location["country_name"]
+            # Email sending
+            email = EmailMessage(
+                'Activate your account',
+                'Hi  ' + str(code.user)+ "!" + "\nPlease activate your account with " + str(code.number) +' on this URL ' + absolute_link, 
+                '',
+                [usermail],
+            
+            )
+            email.send(fail_silently=False)
+            user.save()
+          
 
-
-
-
-        # We check whether the IP is local or not
-        if location_country != "Morocco":
-          # Another API for the code verification
-          print(location_country)
-        
-
-        
-
-        context = {
-            "IP address": ip,
-            "Localization" : location,
-        }
+          
+            context = {
+                "IP address": ip,
+                "Localization" : location,
+            }
 
 
-        return Response({
-            "user" : UserSerializer(user, context=self.get_serializer_context()).data,
-            "token" : AuthToken.objects.create(user)[1],
-            "analytics" : context,
-        })
+            return Response({
+                "user" : UserSerializer(user, context=self.get_serializer_context()).data,
+                "token" : AuthToken.objects.create(user)[1],
+                "analytics" : context,
+            })
+        except :
+            return Response ("Error")
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
