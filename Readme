@@ -19,7 +19,7 @@ Below the folders created and their meanings :
 
 
 
---- It's necessary to provide the credentials for the Facebook API
+--- It's necessary to provide the credentials for the Facebook and Twilio API
 --- The views related to Login in Users need to be modified later because we work on a local mode
 --- Don't forget the CORS policy in the settings 
 
