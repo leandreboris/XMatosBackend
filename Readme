@@ -1,0 +1,25 @@
+This job has been done by leandreboris09@gmail.com supervised by sir Ahmed Adli
+It concerns the Django Restful API for XMATOS 
+
+To be used a superuser needs to be created
+We provided a virtual environment to ease the integrations
+
+
+
+Below the folders created and their meanings : 
+
+1- Analytics is used to track a user data [ IP adress (mainly) ] when he checks an article 
+2- Codes is used to generate a code for a second security authentification 
+3- Entities contains the classes related to the generics Ecommerce classes
+4- Profile updates is used to manage modification of the users profiles (Used to make the code less tedious)
+5- Social auth concerns the Oauth part with certain social media such as Google and Facebook
+6- geoip is used to track the data that derive from an IP adress
+7- static is for all static files
+8- Users is used to define everything relative to the different types of users of the website [Permissions, Login, Registration, ...]
+
+
+
+--- It's necessary to provide the credentials for the Facebook API
+--- The views related to Login in Users need to be modified later because we work on a local mode
+--- Don't forget the CORS policy in the settings 
+
