@@ -73,8 +73,9 @@ class UserRegistrationAPI(generics.GenericAPIView):
        
         # Using geoip2 to get the location
         g = GeoIP2()
-        location = g.city("41.77.119.167")
+        location = g.city("41.77.119.167") # For production, normally we fetch the current user ip adress
         location_country = location["country_name"]
+        # Sake of test
         if location_country != "Morocco":
           print(location_country)
 
@@ -113,7 +114,7 @@ class ProviderRegistrationAPI(generics.GenericAPIView):
 
             # Using geoip2 to get the location
             g = GeoIP2()
-            location = g.city("41.77.119.167") # Production, normally tracked IP
+            location = g.city("41.77.119.167") # For production, normally tracked IP
             location_country = location["country_name"]
 
             # We check whether the location is local or not (This is for a test)
