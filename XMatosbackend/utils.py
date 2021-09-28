@@ -5,9 +5,9 @@ import socket
 
 
 
-account_sid = "AC39f8ed0dedd29b3c82da085715de5c11"
-auth_token = "8720b746571b50538b3ca500f4bfb0c9"
-client = Client(account_sid, auth_token)
+twilio_account_sid = ""
+twilio_auth_token = ""
+client = Client(Twilio_account_sid, twilio_auth_token)
 def send_sms(user_code, phone_number):
     message = client.messages \
                 .create(
